@@ -1,0 +1,55 @@
+﻿  Button.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  CollisionManager.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  Enemy.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  Sprite.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  UIControl.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  DisplayObject.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  EndScene.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  FontManager.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\FontManager.h(11,9): fatal error C1083: Cannot open include file: 'SDL.h': No such file or directory
+  Game.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Game.h(11,10): fatal error C1083: Cannot open include file: 'SDL.h': No such file or directory
+  GameController.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\GameController.h(5,10): fatal error C1083: Cannot open include file: 'SDL.h': No such file or directory
+  GameObject.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  Label.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  PlayScene.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  main.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Game.h(11,10): fatal error C1083: Cannot open include file: 'SDL.h': No such file or directory
+  Plane.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  Player.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  Renderer.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Renderer.h(4,10): fatal error C1083: Cannot open include file: 'SDL.h': No such file or directory
+  Scene.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  ship.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  SoundManager.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\SoundManager.h(11,10): fatal error C1083: Cannot open include file: 'SDL_mixer.h': No such file or directory
+  Generating Code...
+  Compiling...
+  EventManager.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\EventManager.h(5,10): fatal error C1083: Cannot open include file: 'SDL.h': No such file or directory
+  SpriteSheet.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\SpriteSheet.h(7,10): fatal error C1083: Cannot open include file: 'SDL.h': No such file or directory
+  StartScene.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  Target.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Transform.h(4,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  TextureManager.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\TextureManager.h(10,10): fatal error C1083: Cannot open include file: 'glm/vec2.hpp': No such file or directory
+  Util.cpp
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Lab1-master\src\Util.h(5,10): fatal error C1083: Cannot open include file: 'GLM/vec2.hpp': No such file or directory
+  Generating Code...
