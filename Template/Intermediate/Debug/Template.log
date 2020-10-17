@@ -10,8 +10,8 @@ C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\s
               T=float
           ]
 C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\src\PlayScene.cpp(96,4): warning C4065: switch statement contains 'default' but no 'case' labels
-C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\src\PlayScene.cpp(155,51): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\src\PlayScene.cpp(242,66): warning C4390: ';': empty controlled statement found; is this the intent?
-C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\src\PlayScene.cpp(260,65): warning C4390: ';': empty controlled statement found; is this the intent?
-C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\src\PlayScene.cpp(270,68): warning C4390: ';': empty controlled statement found; is this the intent?
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\src\PlayScene.cpp(156,51): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\src\PlayScene.cpp(241,66): warning C4390: ';': empty controlled statement found; is this the intent?
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\src\PlayScene.cpp(259,65): warning C4390: ';': empty controlled statement found; is this the intent?
+C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\src\PlayScene.cpp(269,68): warning C4390: ';': empty controlled statement found; is this the intent?
   Template.vcxproj -> C:\Users\eric\Desktop\Game Programming 2020\Physics\GAME2005-F2020-Assignment2\bin\Debug\Template.exe

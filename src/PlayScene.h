@@ -83,7 +83,7 @@ private:
 	// ImGui visibility variables
 
 	//Pixel per meter
-	const float PPM = 50.0f;
+	float PPM = 25.0f;
 };
 
 #endif /* defined (__PLAY_SCENE__) */

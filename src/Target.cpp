@@ -26,6 +26,8 @@ Target::Target()
 	m_force = 0.0f;
 	m_frictionCoefficient = 0.42f;
 	m_rotateTarget = 0;
+	m_deccelerationCalculated = false;
+	m_PPM = 25;
 
 	setType(TARGET);
 }
@@ -48,6 +50,10 @@ void Target::update()
 	if (getTransform()->position.y >= 500.0f - getHeight() / 2)
 	{
 		setOnGround(true);
+		m_direction.y = 0;
+		getRigidBody()->velocity.x = Util::magnitude(getRigidBody()->velocity);
+		getRigidBody()->velocity.y = 0;
+		std::cout << Util::magnitude(getRigidBody()->velocity) << std::endl;
 	}
 	m_move();
 
@@ -178,6 +184,11 @@ float Target::getRotateTarget()
 	return m_rotateTarget;
 }
 
+float Target::getPPM()
+{
+	return m_PPM;
+}
+
 bool Target::getOnGround()
 {
 	return m_onGround;
@@ -203,6 +214,11 @@ void Target::setOnGround(bool onGround)
 	m_onGround = onGround;
 }
 
+void Target::setPPM(float PPM)
+{
+	m_PPM = PPM;
+}
+
 void Target::clean()
 {
 }
@@ -223,14 +239,18 @@ void Target::m_move()
 			getRigidBody()->acceleration = glm::vec2(0.0f);
 			m_beginSimulation = false;
 			m_onGround = false;
+			m_deccelerationCalculated = false;
 			std::cout << getTransform()->position.x << std::endl;
 		}
 		//Deccelerate 
 		else
 		{
-			getTransform()->position.y = 500.0f - getHeight() / 2;
-			calculateAcceleration(0, calculateForceK());
-			getRigidBody()->acceleration = Util::normalize(getRigidBody()->velocity) * (m_acceleraton);	
+			if (!m_deccelerationCalculated)
+			{
+				calculateAcceleration(0, calculateForceK());
+				getRigidBody()->acceleration.x = m_acceleraton;
+			}
+			getRigidBody()->velocity.x += m_acceleraton *m_PPM * deltaTime;
 		}
 	}
 	//Accelerate if begin simulation button is pressed by still on ramp
@@ -238,10 +258,11 @@ void Target::m_move()
 	{
 		 m_rotateTarget = m_theta;
 		 getRigidBody()->acceleration = Util::normalize(m_direction) *(m_acceleraton);
+		 getRigidBody()->velocity += (getRigidBody()->acceleration*m_PPM)*deltaTime;
 	}
 
 	//update target position
-	 getRigidBody()->velocity += getRigidBody()->acceleration;
+
 	 glm::vec2 pos = getTransform()->position;
 	 pos.x += getRigidBody()->velocity.x * deltaTime;
 	 pos.y += getRigidBody()->velocity.y * deltaTime;

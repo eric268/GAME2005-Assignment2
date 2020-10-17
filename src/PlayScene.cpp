@@ -33,7 +33,7 @@ void PlayScene::update()
 
 
 	//Printing Labels
-	m_pVelocityLabel->setText("Velocity: " + std::to_string(Util::magnitude(m_pThermalDetonator->getRigidBody()->velocity)/50));
+	m_pVelocityLabel->setText("Velocity: " + std::to_string(Util::magnitude(m_pThermalDetonator->getRigidBody()->velocity)/PPM));
 	m_pDistanceLabel->setText("Distance = m");
 	m_pMassLabel->setText("Weight = " + std::to_string(m_pThermalDetonator->getMass()) + "kg");
 	m_pAccelerationLabel->setText("Acceleration = " + std::to_string(Util::magnitude(m_pThermalDetonator->getRigidBody()->acceleration)) + "m/s^2");
@@ -126,15 +126,16 @@ void PlayScene::handleEvents()
 
 void PlayScene::start()
 {
-	//Ramp position variables
-	adjustRampWidth = glm::vec2(250.0f, 500.f);
-	adjustRampPosition = glm::vec2(50.0f, 500);
-	adjustRampHeight = glm::vec2(200.0f, 350.0f);
-	
-	//Ramp values according to PPM
 	rampHeight = 3;
 	rampWidth = 4;
 	rampPos = 0.5;
+	//Ramp position variables
+	adjustRampPosition = glm::vec2(50.0f, 500);
+	adjustRampWidth = glm::vec2(adjustRampPosition.x + (rampWidth*PPM), adjustRampPosition.y);
+	adjustRampHeight = glm::vec2(adjustRampPosition.x, adjustRampPosition.y - (rampHeight*PPM));
+	
+	//Ramp values according to PPM
+
 
 	//Setting trackers for changes in sliders
 	rampPosPrev = rampPos;
@@ -181,7 +182,7 @@ void PlayScene::start()
 	m_pForceLabel->setParent(this);
 	addChild(m_pForceLabel);
 
-	m_pPPM = new Label("Scale: 50 PPM ", "Consolas", 15, white, glm::vec2(741.0f, 580.0f));
+	m_pPPM = new Label("Scale: "+std::to_string(PPM), "Consolas", 15, white, glm::vec2(741.0f, 580.0f));
 	m_pPPM->setParent(this);
 	addChild(m_pPPM);
 
@@ -206,6 +207,7 @@ void PlayScene::checkGuiChangs()
 		m_pThermalDetonator->setDirY(rampHeight);
 		m_pThermalDetonator->calculateTheta();
 		m_pThermalDetonator->calculateAcceleration(m_pThermalDetonator->calculateForceGX(), 0);
+
 
 	}
 	ImGui::SameLine();

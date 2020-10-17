@@ -32,6 +32,7 @@ public:
 	float getMass();
 	float getFrictionCoefficient();
 	float getRotateTarget();
+	float getPPM();
 	bool getBeginSimulation();
 	bool getOnGround();
 
@@ -47,6 +48,7 @@ public:
 	void setFrictionCoefficient(float);
 	void setRotateTarget(float);
 	void setOnGround(bool);
+	void setPPM(float);
 
 private:
 	glm::vec2 m_direction;
@@ -57,15 +59,16 @@ private:
 	float m_force;
 	float m_theta;
 	float m_mass;
+	float m_PPM = 25.0f;
 	bool m_beginSimulation;
 	bool m_onGround;
+	bool m_deccelerationCalculated;
 
 	void m_move();
 	void m_checkBounds();
 	void m_reset();
 
 	//Constants
-	const float PPM = 50.0f;
 	const float m_gravity = 9.8f;
 };
 
