@@ -27,14 +27,7 @@ public:
 	void resetSceneSettings();
 	void checkGuiChangs();
 
-
-	void calculateRampSlope();
-
 	void drawRamp();
-
-	glm::vec2 adjustRampWidth;
-	glm::vec2 adjustRampHeight;
-	glm::vec2 adjustRampPosition;
 
 	float rampHeightTemp;
 	float rampHeightPrevious;
@@ -51,6 +44,9 @@ public:
 
 private:
 	glm::vec2 m_mousePosition;
+	glm::vec2 adjustRampWidth;
+	glm::vec2 adjustRampHeight;
+	glm::vec2 adjustRampPosition;
 
 	Plane* m_pPlaneSprite;
 	Player* m_pPlayer;
@@ -85,9 +81,8 @@ private:
 	//ImVec4 m_euclideanButtonColour;
 
 	// ImGui visibility variables
-	bool hitStormtrooper = true;
-	bool useAngleChosen = true;
 
+	//Pixel per meter
 	const float PPM = 50.0f;
 };
 

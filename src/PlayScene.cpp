@@ -126,33 +126,33 @@ void PlayScene::handleEvents()
 
 void PlayScene::start()
 {
-
-
 	//Ramp position variables
 	adjustRampWidth = glm::vec2(250.0f, 500.f);
 	adjustRampPosition = glm::vec2(50.0f, 500);
 	adjustRampHeight = glm::vec2(200.0f, 350.0f);
+	
+	//Ramp values according to PPM
 	rampHeight = 3;
 	rampWidth = 4;
 	rampPos = 0.5;
 
+	//Setting trackers for changes in sliders
 	rampPosPrev = rampPos;
 	rampHeightPrevious = rampHeight;
 	rampWidthPrevious = rampWidth;
 	rampPositionTracker = adjustRampPosition.x;
-	//m_pThermalDetonator->setDirX(rampWidth);
-	//m_pThermalDetonator->setDirY(rampHeight);
 
 	m_updateUI();
 
 	//Setting up background
 	TextureManager::Instance()->load("../Assets/textures/Background1.jpg", "Background1");
 
-
 	//Target Sprite(Thermal Detonator)
 	m_pThermalDetonator = new Target();
 	addChild(m_pThermalDetonator);
-	lootBoxOffset = m_pThermalDetonator->getHeight()/2;
+
+	//Texture sets position to center of box so offset it 
+	lootBoxOffset = m_pThermalDetonator->getHeight() / 2;
 	m_pThermalDetonator->getTransform()->position = glm::vec2(adjustRampPosition.x, adjustRampHeight.y - lootBoxOffset);
 
 	
@@ -196,9 +196,6 @@ void PlayScene::setGuidSlidePlaceholders()
 }
 void PlayScene::resetSceneSettings()
 {
-	
-
-
 }
 void PlayScene::checkGuiChangs()
 {
@@ -215,8 +212,11 @@ void PlayScene::checkGuiChangs()
 	if (ImGui::Button("Reset Scene"))
 	{
 		m_pThermalDetonator->getTransform()->position = glm::vec2(adjustRampPosition.x, adjustRampHeight.y - lootBoxOffset);
-		m_pThermalDetonator->setStartingPosition(glm::vec2(adjustRampPosition.x, adjustRampHeight.y));
 		m_pThermalDetonator->setBeginSimulation(false);
+		m_pThermalDetonator->getRigidBody()->velocity = glm::vec2(0.0f);
+		m_pThermalDetonator->getRigidBody()->acceleration = glm::vec2(0.0f);
+		m_pThermalDetonator->setRotateTarget(0.0f);
+		m_pThermalDetonator->setOnGround(false);
 	}
 	
 	//if (ImGui::SliderFloat("Speed Thrown", &GuiSliderPlaceholders[2], 80, 200))
@@ -244,15 +244,15 @@ void PlayScene::checkGuiChangs()
 			adjustRampPosition.x += rampPosTemp;
 			adjustRampWidth.x += rampPosTemp;
 			rampPosPrev = rampPos;
+			m_pThermalDetonator->getTransform()->position.x = adjustRampPosition.x;
+			m_pThermalDetonator->getTransform()->position.y = adjustRampHeight.y - lootBoxOffset;
 
 		}
 		adjustRampHeight.x = adjustRampPosition.x;
 		if (adjustRampPosition.x != rampPositionTracker)
 		{
-			m_pThermalDetonator->getTransform()->position.x = adjustRampPosition.x;
 			rampPositionTracker = adjustRampPosition.x;
 		}
-
 	}
 	if (ImGui::SliderFloat("Adjust ramp Width ", &rampWidth, 1, 7));
 	{
@@ -268,14 +268,12 @@ void PlayScene::checkGuiChangs()
 	{
 		if (rampHeight != rampHeightPrevious)
 		{
-			rampHeightTemp = rampHeight *PPM - rampHeightPrevious* PPM;
+			rampHeightTemp = (rampHeight *PPM) - (rampHeightPrevious* PPM);
 			adjustRampHeight.y -= rampHeightTemp;
 			m_pThermalDetonator->getTransform()->position.y = adjustRampHeight.y - lootBoxOffset;
 			rampHeightPrevious = rampHeight;
 
 		}
-
-
 	}
 }
 
@@ -287,7 +285,8 @@ void PlayScene::drawRamp()
 
 	Util::DrawLine(adjustRampHeight,adjustRampWidth);
 
-
+	//Ground for degugging purposes
+	Util::DrawLine(glm::vec2(0,500), glm::vec2(1000, 500));
 }
 // ImGui functions ***********************************************
 
