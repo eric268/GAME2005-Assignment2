@@ -33,6 +33,7 @@ public:
 	float getFrictionCoefficient();
 	float getRotateTarget();
 	float getPPM();
+	float getMaxSpeed();
 	bool getBeginSimulation();
 	bool getOnGround();
 
@@ -49,6 +50,9 @@ public:
 	void setRotateTarget(float);
 	void setOnGround(bool);
 	void setPPM(float);
+	void setMaxSpeed(float);
+	void setAtMaxSpeed(bool);
+	void setDeccelerationCalculated(bool);
 
 private:
 	glm::vec2 m_direction;
@@ -59,10 +63,12 @@ private:
 	float m_force;
 	float m_theta;
 	float m_mass;
-	float m_PPM = 25.0f;
+	float m_PPM;
+	float m_MaxSpeed;
 	bool m_beginSimulation;
 	bool m_onGround;
 	bool m_deccelerationCalculated;
+	bool m_atMaxSpeed;
 
 	void m_move();
 	void m_checkBounds();

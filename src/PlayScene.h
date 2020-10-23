@@ -23,24 +23,44 @@ public:
 	virtual void start() override;
 	float GuiSliderPlaceholders[6];
 
-	void setGuidSlidePlaceholders();
+	void beginSimulation();
 	void resetSceneSettings();
+	void resetCrateSettings();
 	void checkGuiChangs();
-
+	float getPPM();
 	void drawRamp();
 
-	float rampHeightTemp;
-	float rampHeightPrevious;
-	float rampPositionTracker;
-	float rampWidthPrevious;
-	float widthTemp;
-	
-	float rampHeight;
-	float rampWidth;
-	float rampPos;
-	float rampPosPrev;
-	float rampPosTemp;
-	float lootBoxOffset;
+	float calculateDistanceOnGround();
+
+	bool noFrictionSelected();
+
+	float m_rampHeightTemp;
+	float m_rampHeightPrevious;
+	float m_rampPositionTracker;
+	float m_rampWidthPrevious;
+	float m_widthTemp;
+
+	float m_distance;
+	float m_rampHeight;
+	float m_rampWidth;
+	float m_rampPos;
+	float m_rampPosPrev;
+	float m_rampPosTemp;
+	float m_lootBoxOffset;
+
+	float m_crateMass;
+	float m_crateMassTemp;
+	float m_crateMassPrev;
+
+	bool m_steelFriction;
+	bool m_iceFriction;
+	bool m_glassFriction;
+	bool m_grassFriction;
+
+	bool m_steelChecked;
+	bool m_iceChecked;
+	bool m_glassChecked;
+	bool m_grassChecked;
 
 private:
 	glm::vec2 m_mousePosition;
@@ -59,10 +79,11 @@ private:
 	Label* m_pForceLabel;
 	Label* m_pPPM;
 	Label* m_pCannotHitTrooper;
-	
+	Label* m_pMaxSpeed;
 	Button* m_pBackButton;
 	Button* m_pNextButton;
-	Target* m_pThermalDetonator;
+	Target* m_pLootCrate;
+	Label* m_pFrictionCoefficient;
 
 
 
@@ -84,6 +105,10 @@ private:
 
 	//Pixel per meter
 	float PPM = 25.0f;
+	float PPMPrev;
+	const SDL_Color black = { 0,0,0,255 };
+	const SDL_Color white = { 255,255,255, 255 };
+	const SDL_Color red = { 255,0,0,255 };
 };
 
 #endif /* defined (__PLAY_SCENE__) */

@@ -17,7 +17,22 @@ PlayScene::~PlayScene()
 void PlayScene::draw()
 {
 	//Background
-	TextureManager::Instance()->draw("Background1", 400, 300, 0, 255, true);
+	if (m_steelFriction)
+	{
+		TextureManager::Instance()->draw("steel", 400, 300, 0, 255, true);
+	}
+	else if (m_iceFriction)
+	{
+		TextureManager::Instance()->draw("ice", 400, 300, 0, 255, true);
+	}
+	else if (m_glassFriction)
+	{
+		TextureManager::Instance()->draw("glass", 400, 300, 0, 255, true);
+	}
+	else if (m_grassFriction)
+	{
+		TextureManager::Instance()->draw("grass", 400, 300, 0, 255, true);
+	}
 	drawDisplayList();
 	drawRamp();
 
@@ -33,11 +48,39 @@ void PlayScene::update()
 
 
 	//Printing Labels
-	m_pVelocityLabel->setText("Velocity: " + std::to_string(Util::magnitude(m_pThermalDetonator->getRigidBody()->velocity)/PPM));
-	m_pDistanceLabel->setText("Distance = m");
-	m_pMassLabel->setText("Weight = " + std::to_string(m_pThermalDetonator->getMass()) + "kg");
-	m_pAccelerationLabel->setText("Acceleration = " + std::to_string(Util::magnitude(m_pThermalDetonator->getRigidBody()->acceleration)) + "m/s^2");
-	m_pForceLabel->setText("Force = " + std::to_string(m_pThermalDetonator->calculateForce()) + "N");
+	m_pVelocityLabel->setText("Velocity: " + std::to_string(Util::magnitude(m_pLootCrate->getRigidBody()->velocity)/PPM));
+	m_pMassLabel->setText("Mass of Crate: = " + std::to_string(m_pLootCrate->getMass()) + "kg");
+	if (m_pLootCrate->getOnGround())
+	{
+		m_pDistanceLabel->setText("Distance on ground = " + std::to_string(calculateDistanceOnGround()) + "m");
+	}
+	else
+	{
+		m_pDistanceLabel->setText("Distance on ground = 0m");
+	}
+
+	if (m_pLootCrate->getOnGround())
+	{
+		m_pAccelerationLabel->setText("Acceleration = " + std::to_string(m_pLootCrate->getRigidBody()->acceleration.x) + "m/s^2");
+	}
+	else
+	{
+		m_pAccelerationLabel->setText("Acceleration = " + std::to_string(Util::magnitude(m_pLootCrate->getRigidBody()->acceleration)) + "m/s^2");
+	}
+	if (m_pLootCrate->getOnGround())
+	{
+		m_pForceLabel->setText("Net Force = " + std::to_string(m_pLootCrate->calculateNetForce(0,m_pLootCrate->calculateForceK())) + "N");
+	}
+	else
+	{
+		m_pForceLabel->setText("Net Force = " + std::to_string(m_pLootCrate->calculateNetForce(m_pLootCrate->calculateForceGX(), 0)) + "N");
+	}
+	
+	m_pMaxSpeed->setText("Max Speed = " + std::to_string(m_pLootCrate->getMaxSpeed()) + "m/s^2");
+	 
+	m_pPPM->setText("Scale: " + std::to_string(PPM) + " PPM");
+
+	m_pFrictionCoefficient->setText("Friction coefficient = " + std::to_string(m_pLootCrate->getFrictionCoefficient()));
 }
 
 void PlayScene::clean()
@@ -126,169 +169,310 @@ void PlayScene::handleEvents()
 
 void PlayScene::start()
 {
-	rampHeight = 3;
-	rampWidth = 4;
-	rampPos = 0.5;
+	m_rampHeight = 3;
+	m_rampWidth = 4;
+	m_rampPos = 0.5;
 	//Ramp position variables
 	adjustRampPosition = glm::vec2(50.0f, 500);
-	adjustRampWidth = glm::vec2(adjustRampPosition.x + (rampWidth*PPM), adjustRampPosition.y);
-	adjustRampHeight = glm::vec2(adjustRampPosition.x, adjustRampPosition.y - (rampHeight*PPM));
+	adjustRampWidth = glm::vec2(adjustRampPosition.x + (m_rampWidth*PPM), adjustRampPosition.y);
+	adjustRampHeight = glm::vec2(adjustRampPosition.x, adjustRampPosition.y - (m_rampHeight*PPM));
 	
 	//Ramp values according to PPM
+	m_steelFriction = true;
+	m_iceFriction = false;
+	m_glassFriction = false;
+	m_grassFriction = false;
 
+	m_steelChecked = true;
+	m_iceChecked = true;
+	m_glassChecked = true;
+	m_grassChecked = true;
 
+	//Load Background
+	TextureManager::Instance()->load("../Assets/textures/steel.jpg", "steel");
+	TextureManager::Instance()->load("../Assets/textures/ice.jpg", "ice");
+	TextureManager::Instance()->load("../Assets/textures/glass.jpg", "glass");
+	TextureManager::Instance()->load("../Assets/textures/grass.jpg", "grass");
+	PPM = PPMPrev;
 	//Setting trackers for changes in sliders
-	rampPosPrev = rampPos;
-	rampHeightPrevious = rampHeight;
-	rampWidthPrevious = rampWidth;
-	rampPositionTracker = adjustRampPosition.x;
+	m_rampPosPrev = m_rampPos;
+	m_rampHeightPrevious = m_rampHeight;
+	m_rampWidthPrevious = m_rampWidth;
+	m_rampPositionTracker = adjustRampPosition.x;
 
 	m_updateUI();
 
-	//Setting up background
-	TextureManager::Instance()->load("../Assets/textures/Background1.jpg", "Background1");
-
 	//Target Sprite(Thermal Detonator)
-	m_pThermalDetonator = new Target();
-	addChild(m_pThermalDetonator);
+	m_pLootCrate = new Target();
+	m_pLootCrate->setParent(this);
+	addChild(m_pLootCrate);
 
 	//Texture sets position to center of box so offset it 
-	lootBoxOffset = m_pThermalDetonator->getHeight() / 2;
-	m_pThermalDetonator->getTransform()->position = glm::vec2(adjustRampPosition.x, adjustRampHeight.y - lootBoxOffset);
-
-	
+	m_lootBoxOffset = m_pLootCrate->getHeight() / 2;
+	m_pLootCrate->getTransform()->position = glm::vec2(adjustRampPosition.x, adjustRampHeight.y - m_lootBoxOffset);
 
 	// Label
-	const SDL_Color white = { 255,255,255, 255 };
-	const SDL_Color red = { 255,0,0,255 };
 
-	m_pDistanceLabel = new Label("Distance", "Consolas", 20, white, glm::vec2(596.0f, 40.0f));
+	m_pDistanceLabel = new Label("Distance", "Consolas", 20, black, glm::vec2(596.0f, 30.0f));
 	m_pDistanceLabel->setParent(this);
 	addChild(m_pDistanceLabel);
 
-	m_pAccelerationLabel = new Label("Acceleration: ", "Consolas", 20, white, glm::vec2(632.0f, 80.0f));
+	m_pAccelerationLabel = new Label("Acceleration: ", "Consolas", 20, black, glm::vec2(632.0f, 70.0f));
 	m_pAccelerationLabel->setParent(this);
 	addChild(m_pAccelerationLabel);
 
-	m_pVelocityLabel = new Label("Velocity: ", "Consolas", 20, white, glm::vec2(599.0f, 120.0f));
+	m_pVelocityLabel = new Label("Velocity: ", "Consolas", 20, black, glm::vec2(599.0f, 110.0f));
 	m_pVelocityLabel->setParent(this);
 	addChild(m_pVelocityLabel);
 
-	m_pMassLabel = new Label("Mass: ", "Consolas", 20, white, glm::vec2(583.0f, 160.0f));
+	m_pMaxSpeed = new Label("Max Speed: 0", "Consolas", 20, black, glm::vec2(583.0f, 150.0f));
+	m_pMaxSpeed->setParent(this);
+	addChild(m_pMaxSpeed);
+
+	m_pMassLabel = new Label("Mass: ", "Consolas", 20, black, glm::vec2(583.0f, 190.0f));
 	m_pMassLabel->setParent(this);
 	addChild(m_pMassLabel);
 
-	m_pForceLabel = new Label("Force: ", "Consolas", 20, white, glm::vec2(571.0f, 200.0f));
+	m_pForceLabel = new Label("Force: ", "Consolas", 20, black, glm::vec2(571.0f, 230.0f));
 	m_pForceLabel->setParent(this);
 	addChild(m_pForceLabel);
 
-	m_pPPM = new Label("Scale: "+std::to_string(PPM), "Consolas", 15, white, glm::vec2(741.0f, 580.0f));
+	m_pPPM = new Label("Scale: "+std::to_string(PPM), "Consolas", 20, black, glm::vec2(690.0f, 580.0f));
 	m_pPPM->setParent(this);
 	addChild(m_pPPM);
 
-	m_pCannotHitTrooper = new Label(" ", "Consolas", 25, red, glm::vec2(400.0f, 350.0f));
-	m_pCannotHitTrooper->setParent(this);
-	addChild(m_pCannotHitTrooper);
+	m_pFrictionCoefficient = new Label("Friction coefficient: ", "Consolas", 20, black, glm::vec2(583.0f, 270.0f));
+	m_pFrictionCoefficient->setParent(this);
+	addChild(m_pFrictionCoefficient);
+
+	
 
 	resetSceneSettings();
 }
-void PlayScene::setGuidSlidePlaceholders()
+float PlayScene::getPPM()
 {
+	return PPM;
+}
+void PlayScene::beginSimulation()
+{
+	m_pLootCrate->setBeginSimulation(true);
+	m_pLootCrate->setDirX(m_rampWidth);
+	m_pLootCrate->setDirY(m_rampHeight);
+	m_pLootCrate->calculateTheta();
+	m_pLootCrate->calculateAcceleration(m_pLootCrate->calculateForceGX(), 0);
+	m_pLootCrate->setOnGround(false);
+	m_pLootCrate->getFrictionCoefficient();
 }
 void PlayScene::resetSceneSettings()
 {
+	m_pLootCrate->setBeginSimulation(false);
+	m_rampHeight = 3;
+	m_rampWidth = 4;
+	m_rampPos = 0.5;
+	adjustRampPosition = glm::vec2(50.0f, 500);
+	adjustRampWidth = glm::vec2(adjustRampPosition.x + (m_rampWidth * PPM), adjustRampPosition.y);
+	adjustRampHeight = glm::vec2(adjustRampPosition.x, adjustRampPosition.y - (m_rampHeight * PPM));
+	PPM = 25.0f;
+	m_rampPosPrev = m_rampPos;
+	m_rampHeightPrevious = m_rampHeight;
+	m_rampWidthPrevious = m_rampWidth;
+	m_rampPositionTracker = adjustRampPosition.x;
+	m_pLootCrate->getTransform()->position = glm::vec2(adjustRampPosition.x, adjustRampHeight.y - m_lootBoxOffset);
+
+	m_pLootCrate->setAtMaxSpeed(false);
+	m_pLootCrate->setMaxSpeed(0.0f);
+	m_pLootCrate->setRotateTarget(0.0f);
+	m_pLootCrate->getRigidBody()->velocity = glm::vec2(0.0f);
+	m_pLootCrate->getRigidBody()->acceleration = glm::vec2(0.0f); // Stop the crate
+	m_pLootCrate->setDeccelerationCalculated(false);
+	m_pLootCrate->setOnGround(false);
+
 }
+
+void PlayScene::resetCrateSettings()
+{
+	m_pLootCrate->setAtMaxSpeed(false);
+	m_pLootCrate->setMaxSpeed(0.0f);
+	m_pLootCrate->setBeginSimulation(false);
+	m_pLootCrate->getTransform()->position = glm::vec2(adjustRampPosition.x, adjustRampHeight.y - m_lootBoxOffset);
+	m_pLootCrate->getRigidBody()->velocity = glm::vec2(0.0f);
+	m_pLootCrate->getRigidBody()->acceleration = glm::vec2(0.0f);
+	m_pLootCrate->setRotateTarget(0.0f);
+	m_pLootCrate->setDeccelerationCalculated(false);
+	m_pLootCrate->setOnGround(false);
+
+}
+
 void PlayScene::checkGuiChangs()
 {
 	if (ImGui::Button("Begin Simulation"))
 	{
-		m_pThermalDetonator->setBeginSimulation(true);
-		m_pThermalDetonator->setDirX(rampWidth);
-		m_pThermalDetonator->setDirY(rampHeight);
-		m_pThermalDetonator->calculateTheta();
-		m_pThermalDetonator->calculateAcceleration(m_pThermalDetonator->calculateForceGX(), 0);
-
-
+		beginSimulation();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Reset Crate"))
+	{
+		resetCrateSettings();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Reset Scene"))
 	{
-		m_pThermalDetonator->getTransform()->position = glm::vec2(adjustRampPosition.x, adjustRampHeight.y - lootBoxOffset);
-		m_pThermalDetonator->setBeginSimulation(false);
-		m_pThermalDetonator->getRigidBody()->velocity = glm::vec2(0.0f);
-		m_pThermalDetonator->getRigidBody()->acceleration = glm::vec2(0.0f);
-		m_pThermalDetonator->setRotateTarget(0.0f);
-		m_pThermalDetonator->setOnGround(false);
+		resetSceneSettings();
 	}
 	
-	//if (ImGui::SliderFloat("Speed Thrown", &GuiSliderPlaceholders[2], 80, 200))
-	//{
-	//	m_pThermalDetonator->setSpeedThrown(GuiSliderPlaceholders[2]);
-	//}
-	//if (ImGui::SliderFloat("Gravity", &GuiSliderPlaceholders[3], 5, 20))
-	//{
-	//	m_pThermalDetonator->setGravity(GuiSliderPlaceholders[3]);
-	//}
-	//if (ImGui::SliderFloat("Mass", &GuiSliderPlaceholders[4], 0.1, 10))
-	//{
-	//	m_pThermalDetonator->setMass(4);
-	//}
-	//if (ImGui::SliderFloat("Angle (theta)", &GuiSliderPlaceholders[5], 0, 90))
-	//{
-	//	m_pThermalDetonator->setTheta(GuiSliderPlaceholders[5]);
-
-	//}
-	if (ImGui::SliderFloat("Adjust ramp Position ", &rampPos, 0, 4));
+	if (ImGui::Checkbox("Steel on Steel Friction", &m_steelFriction))
 	{
-		if (rampPos != rampPosPrev)
+		if (m_steelFriction == true)
 		{
-			rampPosTemp = rampPos * PPM - rampPosPrev * PPM;
-			adjustRampPosition.x += rampPosTemp;
-			adjustRampWidth.x += rampPosTemp;
-			rampPosPrev = rampPos;
-			m_pThermalDetonator->getTransform()->position.x = adjustRampPosition.x;
-			m_pThermalDetonator->getTransform()->position.y = adjustRampHeight.y - lootBoxOffset;
+			m_pLootCrate->setFrictionCoefficient(0.42);
+			m_iceFriction = false;
+			m_grassFriction = false;
+			m_glassFriction = false;
+		}
+		else
+		{
+			m_steelFriction = false;
+			if (noFrictionSelected())
+			{
+				m_steelFriction = true;
+			}
+		}
+	}
+
+	if (ImGui::Checkbox("Steel on Ice Friction", &m_iceFriction))
+	{
+		if (m_iceFriction == true)
+		{
+			m_pLootCrate->setFrictionCoefficient(0.01f);
+			m_steelFriction = false;
+			m_grassFriction = false;
+			m_glassFriction = false;
+		}
+		else
+		{
+			m_iceFriction = false;
+			if (noFrictionSelected())
+			{
+				m_iceFriction = true;
+			}
+		}
+	}
+
+	if (ImGui::Checkbox("Steel on Glass Friction", &m_glassFriction))
+	{
+		if (m_glassFriction == true)
+		{
+			m_pLootCrate->setFrictionCoefficient(0.60f);
+			m_iceFriction = false;
+			m_steelFriction = false;
+			m_grassFriction = false;
+		}
+		else
+		{
+			m_glassFriction = false;
+			if (noFrictionSelected())
+			{
+				m_glassFriction = true;
+			}
+		}
+	}
+	if (ImGui::Checkbox("Steel on Grass Friction", &m_grassFriction))
+	{
+		if (m_grassFriction == true)
+		{
+			m_pLootCrate->setFrictionCoefficient(0.24f);
+			m_iceFriction = false;
+			m_steelFriction = false;
+			m_glassFriction = false;
+		}
+		else
+		{
+			m_grassFriction = false;
+			if (noFrictionSelected())
+			{
+				m_grassFriction = true;
+			}
+		}
+	}
+	// Slider Settings
+	if (ImGui::SliderFloat("Adjust ramp Position ", &m_rampPos, 0, 4));
+	{
+		if (m_rampPos != m_rampPosPrev)
+		{
+			m_rampPosTemp = m_rampPos * PPM - m_rampPosPrev * PPM;
+			adjustRampPosition.x += m_rampPosTemp;
+			adjustRampWidth.x += m_rampPosTemp;
+			m_rampPosPrev = m_rampPos;
+			m_pLootCrate->getTransform()->position.x = adjustRampPosition.x;
+			m_pLootCrate->getTransform()->position.y = adjustRampHeight.y - m_lootBoxOffset;
 
 		}
 		adjustRampHeight.x = adjustRampPosition.x;
-		if (adjustRampPosition.x != rampPositionTracker)
+		if (adjustRampPosition.x != m_rampPositionTracker)
 		{
-			rampPositionTracker = adjustRampPosition.x;
+			m_rampPositionTracker = adjustRampPosition.x;
 		}
 	}
-	if (ImGui::SliderFloat("Adjust ramp Width ", &rampWidth, 1, 7));
+	if (ImGui::SliderFloat("Adjust ramp Width ", &m_rampWidth, 1, 7));
 	{
-		if (rampWidth != rampWidthPrevious)
+		if (m_rampWidth != m_rampWidthPrevious)
 		{
-			widthTemp = rampWidth * PPM - rampWidthPrevious * PPM;
-			adjustRampWidth.x += widthTemp;
-			rampWidthPrevious = rampWidth;
+			m_widthTemp = m_rampWidth * PPM - m_rampWidthPrevious * PPM;
+			adjustRampWidth.x += m_widthTemp;
+			m_rampWidthPrevious = m_rampWidth;
 		}
-		//adjustRampWidth.x = adjustRampWidth.x + rampWidth * 50;
 	}
-	if (ImGui::SliderFloat("Adjust ramp Height ", &rampHeight, 1, 10));
+	if (ImGui::SliderFloat("Adjust ramp Height ", &m_rampHeight, 1, 10));
 	{
-		if (rampHeight != rampHeightPrevious)
+		if (m_rampHeight != m_rampHeightPrevious)
 		{
-			rampHeightTemp = (rampHeight *PPM) - (rampHeightPrevious* PPM);
-			adjustRampHeight.y -= rampHeightTemp;
-			m_pThermalDetonator->getTransform()->position.y = adjustRampHeight.y - lootBoxOffset;
-			rampHeightPrevious = rampHeight;
-
+			m_rampHeightTemp = (m_rampHeight *PPM) - (m_rampHeightPrevious* PPM);
+			adjustRampHeight.y -= m_rampHeightTemp;
+			m_pLootCrate->getTransform()->position.y = adjustRampHeight.y - m_lootBoxOffset;
+			m_rampHeightPrevious = m_rampHeight;
+		}
+	}
+	if (ImGui::SliderFloat("Scale (PPM) ", &PPM, 10, 100));
+	{
+		if (PPMPrev != PPM)
+		{
+			m_pLootCrate->setPPM(getPPM());
+			PPMPrev = PPM;
+			adjustRampWidth = glm::vec2(adjustRampPosition.x + (m_rampWidth * PPM), adjustRampPosition.y);
+			adjustRampHeight = glm::vec2(adjustRampPosition.x, adjustRampPosition.y - (m_rampHeight * PPM));
+			m_pLootCrate->getTransform()->position.x = adjustRampPosition.x;
+			m_pLootCrate->getTransform()->position.y = adjustRampHeight.y - m_lootBoxOffset;
 		}
 	}
 }
 
 void PlayScene::drawRamp()
 {
-	Util::DrawLine(adjustRampPosition, adjustRampWidth);
+	Util::DrawLine(adjustRampPosition, adjustRampWidth, glm::vec4(0.0f,0.0f,0.0f,1.0f));
 
-	Util::DrawLine(adjustRampPosition, adjustRampHeight);
+	Util::DrawLine(adjustRampPosition, adjustRampHeight, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-	Util::DrawLine(adjustRampHeight,adjustRampWidth);
+	Util::DrawLine(adjustRampHeight,adjustRampWidth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	//Ground for degugging purposes
-	Util::DrawLine(glm::vec2(0,500), glm::vec2(1000, 500));
+	//Util::DrawLine(glm::vec2(0,500), glm::vec2(1000, 500));
+}
+float PlayScene::calculateDistanceOnGround()
+{
+	float rampStartingPos = adjustRampPosition.x;
+	float rampEndPos = m_rampWidth * PPM;
+	float cratePos = m_pLootCrate->getTransform()->position.x;
+
+	if (m_pLootCrate->getOnGround())
+	{
+		return (cratePos - (rampStartingPos + rampEndPos)) / PPM;
+	}
+	else
+		return 0;
+}
+bool PlayScene::noFrictionSelected()
+{
+	return (!m_iceFriction && !m_steelFriction && !m_grassFriction && !m_glassFriction);
 }
 // ImGui functions ***********************************************
 

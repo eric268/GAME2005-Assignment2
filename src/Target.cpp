@@ -28,6 +28,8 @@ Target::Target()
 	m_rotateTarget = 0;
 	m_deccelerationCalculated = false;
 	m_PPM = 25;
+	m_atMaxSpeed = false;
+	m_MaxSpeed = 0;
 
 	setType(TARGET);
 }
@@ -49,6 +51,11 @@ void Target::update()
 {
 	if (getTransform()->position.y >= 500.0f - getHeight() / 2)
 	{
+		if (!m_atMaxSpeed)
+		{
+			m_MaxSpeed = Util::magnitude(getRigidBody()->velocity) / m_PPM;
+			m_atMaxSpeed = true;
+		}
 		setOnGround(true);
 		m_direction.y = 0;
 		getRigidBody()->velocity.x = Util::magnitude(getRigidBody()->velocity);
@@ -188,7 +195,10 @@ float Target::getPPM()
 {
 	return m_PPM;
 }
-
+float Target::getMaxSpeed()
+{
+	return m_MaxSpeed;
+}
 bool Target::getOnGround()
 {
 	return m_onGround;
@@ -217,6 +227,20 @@ void Target::setOnGround(bool onGround)
 void Target::setPPM(float PPM)
 {
 	m_PPM = PPM;
+}
+void Target::setMaxSpeed(float maxSpeed)
+{
+	m_MaxSpeed = maxSpeed;
+}
+
+void Target::setAtMaxSpeed(bool atMaxSpeed)
+{
+	m_atMaxSpeed = atMaxSpeed;
+}
+
+void Target::setDeccelerationCalculated(bool decellerationCalculated)
+{
+	m_deccelerationCalculated = decellerationCalculated;
 }
 
 void Target::clean()
@@ -249,6 +273,7 @@ void Target::m_move()
 			{
 				calculateAcceleration(0, calculateForceK());
 				getRigidBody()->acceleration.x = m_acceleraton;
+				m_deccelerationCalculated = true;
 			}
 			getRigidBody()->velocity.x += m_acceleraton *m_PPM * deltaTime;
 		}
