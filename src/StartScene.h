@@ -26,6 +26,7 @@ private:
 	Label* m_pStartLabel{};
 	Label* m_pInstructionsLabel{};
 	Label* m_pStartLabel2{};
+	Label* m_pStartLabel3{};
 	Enemy* m_arrEnemies[4];
 
 	Label* m_pName[2];
